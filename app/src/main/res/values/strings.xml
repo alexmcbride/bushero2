@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">BusHero</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_add_bus_stop">AddBusStopActivity</string>
+    <string name="title_nearest">Nearest</string>
+    <string name="title_map">Map</string>
+    <string name="title_search">Search</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Nearest fragment</string>
 </resources>
