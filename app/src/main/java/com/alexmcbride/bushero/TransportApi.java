@@ -21,15 +21,14 @@ public class TransportApi {
         mPlacesAdapter = moshi.adapter(Places.class);
     }
 
-    private String getPlacesUrl(MapLocation location) {
+    private String getPlacesUrl(double latitude, double longitude) {
         return String.format(Locale.ENGLISH,
                 "%s/places.json?app_id=%s&app_key=%s&lat=%f&lon=%f&type=bus_stop",
-                BASE_URL, mKey.getAppId(), mKey.getApiKey(), location.getLatitude(),
-                location.getLongitude());
+                BASE_URL, mKey.getAppId(), mKey.getApiKey(), latitude, longitude);
     }
 
-    public Places getPlaces(MapLocation location) throws IOException {
-        String url = getPlacesUrl(location);
+    public Places getPlaces(double latitude, double longitude) throws IOException {
+        String url = getPlacesUrl(latitude, longitude);
         String json = mJson.get(url);
         return mPlacesAdapter.fromJson(json);
     }

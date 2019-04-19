@@ -4,11 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.annotation.NonNull;
 import android.view.MenuItem;
 
 public class AddBusStopActivity extends AppCompatActivity implements NearestBusStopsFragment.OnFragmentInteractionListener, MapBusStopsFragment.OnFragmentInteractionListener {
@@ -51,11 +52,15 @@ public class AddBusStopActivity extends AppCompatActivity implements NearestBusS
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         mFragmentManager = getSupportFragmentManager();
-
         mNearestBusStopsFragment = NearestBusStopsFragment.newInstance();
         mMapBusStopsFragment = MapBusStopsFragment.newInstance();
-
         updateFragment(mNearestBusStopsFragment);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(R.string.title_add_bus_stop);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @Override

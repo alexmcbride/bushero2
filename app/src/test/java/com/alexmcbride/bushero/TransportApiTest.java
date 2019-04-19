@@ -34,6 +34,15 @@ public class TransportApiTest {
         assertEquals("NaPTAN", places.getSource());
         assertEquals("Contains DfT NaPTAN bus stops data", places.getAcknowledgements());
         assertEquals(10, places.getBusStops().size());
+        BusStop busStop = places.getBusStops().get(0);
+        assertEquals("bus_stop", busStop.getType());
+        assertEquals("Olympic Way - W-bound", busStop.getName());
+        assertEquals("Wembley Park, Wembley", busStop.getDescription());
+        assertEquals(51.55832, busStop.getLatitude(), TestUtil.DELTA);
+        assertEquals(-0.27735, busStop.getLongitude(), TestUtil.DELTA);
+        assertEquals(20, busStop.getAccuracy());
+        assertEquals("490010593W", busStop.getAtcocode());
+        assertEquals(308, busStop.getDistance());
     }
 
     private class MockJsonHandler extends JsonHandler {
