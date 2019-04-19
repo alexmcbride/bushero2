@@ -12,16 +12,19 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Objects;
@@ -33,6 +36,7 @@ public class NearestBusStopsFragment extends Fragment {
     private FusedLocationProviderClient mLocationProviderClient;
     private TransportApi mTransportApi;
     private NearestBusStopsAsyncTask mNearestBusStopsAsyncTask;
+    private RecyclerView mRecyclerView;
 
     public NearestBusStopsFragment() {
         // Required empty public constructor
@@ -105,7 +109,13 @@ public class NearestBusStopsFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_nearest_bus_stops, container, false);
+        View view = inflater.inflate(R.layout.fragment_nearest_bus_stops, container, false);
+
+        mRecyclerView = view.findViewById(R.id.recyclerView);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        return view;
     }
 
     @Override
@@ -150,7 +160,7 @@ public class NearestBusStopsFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Places places) {
-            if (mException == null) {
+            if (mException != null) {
                 mFragment.get().updateFailed(mException);
             } else {
                 mFragment.get().updateNearestBusStops(places.getBusStops());
@@ -160,12 +170,46 @@ public class NearestBusStopsFragment extends Fragment {
     }
 
     private void updateNearestBusStops(List<BusStop> busStops) {
-
+        mRecyclerView.setAdapter(new NearestBusStopsAdapter(busStops));
     }
 
     private void updateFailed(Exception exception) {
-
+        Log.d(TAG, exception.toString());
+        Toast.makeText(getActivity(), "Error: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
     }
 
+    private class NearestBusStopsAdapter extends RecyclerView.Adapter<NearestBusStopViewHolder> {
+        private final List<BusStop> mBusStops;
 
+        public NearestBusStopsAdapter(List<BusStop> busStops) {
+            mBusStops = busStops;
+        }
+
+        @NonNull
+        @Override
+        public NearestBusStopViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
+            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item_nearest_bus_stop, viewGroup, false);
+            return new NearestBusStopViewHolder(view);
+        }
+
+        @Override
+        public int getItemCount() {
+            return mBusStops.size();
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull NearestBusStopViewHolder viewHolder, int position) {
+            BusStop busStop = mBusStops.get(position);
+            viewHolder.textName.setText(busStop.getName());
+        }
+    }
+
+    private class NearestBusStopViewHolder extends RecyclerView.ViewHolder {
+        public TextView textName;
+
+        public NearestBusStopViewHolder(@NonNull View view) {
+            super(view);
+            textName = view.findViewById(R.id.textName);
+        }
+    }
 }
