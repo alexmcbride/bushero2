@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -25,6 +27,17 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(AddBusStopActivity.newInstance(getApplicationContext()));
             }
         });
+
+        BusSQLiteOpenHelper openHelper = new BusSQLiteOpenHelper(this, "bus-hero-db");
+        BusDatabase busDatabase = new BusDatabase(openHelper);
+        BusRepository busRepository = new BusRepository(busDatabase);
+
+        List<BusStop> busStopList = busRepository.getBusStops();
+        updateList(busStopList);
+    }
+
+    private void updateList(List<BusStop> busStopList) {
+
     }
 
     @Override

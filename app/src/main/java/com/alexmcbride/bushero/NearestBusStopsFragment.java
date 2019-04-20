@@ -1,6 +1,7 @@
 package com.alexmcbride.bushero;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -71,7 +72,8 @@ public class NearestBusStopsFragment extends Fragment {
     }
 
     private void updateLocation() {
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        Activity activity = Objects.requireNonNull(getActivity());
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
@@ -160,10 +162,12 @@ public class NearestBusStopsFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Places places) {
+            NearestBusStopsFragment fragment = mFragment.get();
             if (mException != null) {
-                mFragment.get().updateFailed(mException);
+                Log.d(TAG, mException.toString());
+                Toast.makeText(fragment.getActivity(), "Error: " + mException.getMessage(), Toast.LENGTH_SHORT).show();
             } else {
-                mFragment.get().updateNearestBusStops(places.getBusStops());
+                fragment.updateNearestBusStops(places.getBusStops());
             }
             super.onPostExecute(places);
         }
@@ -171,11 +175,6 @@ public class NearestBusStopsFragment extends Fragment {
 
     private void updateNearestBusStops(List<BusStop> busStops) {
         mRecyclerView.setAdapter(new NearestBusStopsAdapter(busStops));
-    }
-
-    private void updateFailed(Exception exception) {
-        Log.d(TAG, exception.toString());
-        Toast.makeText(getActivity(), "Error: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
     }
 
     private class NearestBusStopsAdapter extends RecyclerView.Adapter<NearestBusStopViewHolder> {
