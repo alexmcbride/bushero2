@@ -26,7 +26,8 @@ public class BusDatabase {
              Cursor cursor = db.query(table, null, selection, selectionArgs, null, null, null)) {
             if (cursor.moveToFirst()) {
                 do {
-                    items.add(factory.apply(cursor));
+					T item = factory.apply(cursor);
+                    items.add(item);
                 } while (cursor.moveToNext());
             }
         }
@@ -34,9 +35,11 @@ public class BusDatabase {
     }
 
     public <T> T queryOne(String table, String selection, String[] selectionArgs, Function<Cursor, T> factory) {
-        List<T> items = query(table, selection, selectionArgs, factory);
-        if (items.size() > 0) {
-            return items.get(0);
+        try (SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+             Cursor cursor = db.query(table, null, selection, selectionArgs, null, null, null)) {
+            if (cursor.moveToFirst()) {
+                return factory.apply(cursor);
+            }
         }
         return null;
     }
